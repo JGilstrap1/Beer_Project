@@ -4,6 +4,7 @@ import time
 import relay as relay
 import threading
 import color as color
+import utils
 lcd = LCD.Adafruit_CharLCDPlate()
 
 Ale_High = 70
@@ -30,21 +31,13 @@ def CheckPage(Page):
 class TempProfile():
     
     def __init__(self):
-        self.stopThread = False
-        self.BreakToMenu = threading.Semaphore(1)
-        
-    def shouldStopThread(self):
-        with self.BreakToMenu:
-            return self.stopThread
-        
-    def setStopThread(self):
-        with self.BreakToMenu:
-            print("set stop thread to true")
-            self.stopThread = True
+        self.BreakToMenu = utils.ThreadSafeVar(False)
     
     def Backlight(self):
         global BacklightOn
         while 1:
+            if self.BreakToMenu.get():
+                break # ends the function / thread
             if lcd.is_pressed(LCD.RIGHT):
                 time.sleep(0.4)
                 if BacklightOn == True:
@@ -56,24 +49,21 @@ class TempProfile():
                     lcd.set_backlight(1)
                     BacklightOn = True
                         
-    def CheckExit(self, BreakToMenu):
-        global variable
+    def CheckExit(self):
         while 1:
             if lcd.is_pressed(LCD.LEFT):
                 time.sleep(0.3)
                 print("button pushed")
-                self.setStopThread()
-                if self.shouldStopThread():
-                    with self.BreakToMenu:
-                        variable = 1
+                self.BreakToMenu.set(True)
+                break
                     
 
     def AleTemp(self):
         #variable = 0
         global input
         global BacklightOn
-        BacklightThread = threading.Thread(target=self.Backlight,).start()
-        ExitThread = threading.Thread(target=self.CheckExit, args=(self.BreakToMenu,)).start()
+        threading.Thread(target=self.Backlight).start()
+        threading.Thread(target=self.CheckExit).start()
         while 1:
             lcd.clear()
             temp.read_temp()
@@ -90,18 +80,14 @@ class TempProfile():
             #if Ale_Low < temp.temp_f < Ale_High:
                 #color.Green(input)
                 #Don't adjust fridge
-                
             
-            with self.BreakToMenu:
-                print("in break to menu")
-                if variable == 1:
-                    #variable = 0
-                    #self.setStopThread()
-                    #threading.Lock()
-                    #if self.shouldStopThread():
-                    print ("in break")
-                    break
-                    
-            time.sleep(5)
+            i = 0
+            while i < 10000:
+                i += 1
+                if self.BreakToMenu.get():
+                    print("in break to menu")
+                    return
+                        
+                time.sleep(1)
         
 
