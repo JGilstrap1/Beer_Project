@@ -40,16 +40,16 @@ while 1:
 
             
         if lcd.is_pressed(LCD.UP) | lcd.is_pressed(LCD.DOWN):
+            time.sleep(0.3)
             lcd.clear()
             lcd.message(tog.MainMessage)
             
         if lcd.is_pressed(LCD.DOWN):
-            #lcd.clear()
+            time.sleep(0.3)
             tog.DisplayMenu(CurrentPage)
             
         if lcd.is_pressed(LCD.SELECT):
             time.sleep(0.3)
-            #lcd.clear()
             CheckPage(CurrentPage)    
         
     except KeyboardInterrupt:

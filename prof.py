@@ -6,15 +6,27 @@ import threading
 import color as color
 import utils
 import toggle as tog
+from constants import *
+from custom import *
 lcd = LCD.Adafruit_CharLCDPlate()
-
-Ale_High = 70
-Ale_Low = 65
 
 def CheckPage(Page):
     x = TempProfile()
     if Page == 1:
-        x.AleTemp()
+        #start ale temperatures
+        x.StartProfile(Ale_High, Ale_Low)
+    if Page == 2:
+        #start lager temperatures
+        x.StartProfile(Lager_High, Lager_Low)
+    if Page == 3:
+        #start diacetyl temperatures
+        x.StartProfile(Diacetly_High, Diacetyl_Low)
+    if Page == 4:
+        #start cold lager temperatures
+        x.StartProfile(Cold_Lager_High, Cold_Lager_Low)
+    if Page == 5:
+        #start custom temperatures
+        custom()
         
 
 
@@ -25,7 +37,7 @@ class TempProfile():
         self.BacklightOn = True
         self.temp_f = 0
     
-    def Backlight(self):
+    def Backlight(self, HighTemp, LowTemp):
         while 1:
             if self.BreakToMenu.get():
                 break
@@ -36,7 +48,7 @@ class TempProfile():
                     self.BacklightOn = False
                 else:
                     lcd.set_backlight(1)
-                    if Ale_Low < temp.temp_f < Ale_High:
+                    if LowTemp < temp.temp_f < HighTemp:
                         color.GreenOnly()
                     else:
                         color.RedOnly()
@@ -49,25 +61,26 @@ class TempProfile():
                 self.BreakToMenu.set(True)
                 lcd.clear()
                 lcd.message(tog.MainMessage)
+                relay.TurnOff()
                 break
 
                     
 
-    def AleTemp(self):
-        threading.Thread(target=self.Backlight).start()
+    def StartProfile(self, HighTemp, LowTemp):
+        threading.Thread(target=self.Backlight, args=(HighTemp, LowTemp,)).start()
         threading.Thread(target=self.CheckExit).start()
         while 1:
             temp.read_temp()
-            if temp.temp_f >= Ale_High:
+            if temp.temp_f >= HighTemp:
                 if self.BacklightOn == True:
                     color.Red(str(temp.temp_f))
                 relay.TurnOn()
                 
-            if temp.temp_f <= Ale_Low:
+            if temp.temp_f <= LowTemp:
                 if self.BacklightOn == True: 
                     color.Red(str(temp.temp_f))
                 relay.TurnOff()
-            if Ale_Low < temp.temp_f < Ale_High:
+            if LowTemp < temp.temp_f < HighTemp:
                 if self.BacklightOn == True:
                     color.Green(str(temp.temp_f))
     

@@ -1,9 +1,5 @@
 import time
 import Adafruit_CharLCD as LCD
-#import commands
-#import psutil
-#import toggle as tog
-
 lcd = LCD.Adafruit_CharLCDPlate()
 global CurrentPage
 
@@ -15,9 +11,7 @@ Message5 = "<    Custom    >\n<  Temperature >"
 MainMessage = "   Boner Brew   \n   Thermostat   "
 
 def DisplayMenu(CurrentPage):
-    #global CurrentPage
     lcd.clear()
-    #lcd.message(Message)
     if CurrentPage == 1:
         lcd.clear()
         lcd.message(Message1)
