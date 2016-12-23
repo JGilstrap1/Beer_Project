@@ -26,7 +26,9 @@ def CheckPage(Page):
         x.StartProfile(Cold_Lager_High, Cold_Lager_Low)
     if Page == 5:
         #start custom temperatures
-        custom()
+        #CustomTemp().StartCustom()
+        StartCustom()
+
         
 
 

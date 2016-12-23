@@ -1,19 +1,23 @@
 import Adafruit_CharLCD as LCD
 import time
-#import prof
+import prof as prof
 lcd = LCD.Adafruit_CharLCDPlate()
 
+def StartCustom():
+    y = CustomTemp()
+    shit = CustomTemp().PickLow()
+    cock = CustomTemp().PickHigh()
+    lcd.clear()
+    prof.TempProfile().StartProfile(cock,shit)
 
 class CustomTemp():
     
     def __init__(self):
         self.DefaultHigh = 40
         self.DefaultLow = 40
-        self.HighValue = 0
-        self.LowValue = 0
         
-    
     def PickLow(self):
+        lcd.clear()
         lcd.message(' Pick Low Value \n       %d       ' % (self.DefaultLow))
         while 1:
             if lcd.is_pressed(LCD.UP):
@@ -26,7 +30,7 @@ class CustomTemp():
                 
             if lcd.is_pressed(LCD.SELECT):
                 lcd.clear()
-                self.LowValue = self.DefaultLow
+                return self.DefaultLow
                 break
                 
     def PickHigh(self):
@@ -43,10 +47,5 @@ class CustomTemp():
                 
             if lcd.is_pressed(LCD.SELECT):
                 lcd.clear()
-                self.HighValue = self.DefaultLow
+                return self.DefaultHigh
                 break
-y = CustomTemp()
-y.PickLow()
-y.PickHigh()
-lcd.clear()
-StartProfile(self.LowValue,self.HighValue)

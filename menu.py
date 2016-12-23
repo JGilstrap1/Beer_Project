@@ -32,7 +32,7 @@ while 1:
             tog.DisplayMenu(CurrentPage)
                 
         if lcd.is_pressed(LCD.LEFT):
-            if CurrentPage == 0 | CurrentPage == 1:
+            if CurrentPage == 0:
                 CurrentPage = 5
             else:
                 CurrentPage -= 1
